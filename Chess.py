@@ -19,6 +19,7 @@ def roundx(x,y):
 class Board():
     Whites = []
     Blacks = [] 
+    Move=True
     #TODO : have to put in private status after
     BoardGame = np.empty((8,8), dtype=np.object)
     #oreder the board
@@ -136,24 +137,16 @@ class Board():
     def GetPlayerName(self,x,y):
         return self.BoardGame[x,y].GetName()
     
-    
     #cheak if in square exist friend
+   
+   
     def NoFriend(self,NewPos,team): 
         x,y = NewPos
-
-       #TODO בשורה אחת של קוד!
-        if(self.BoardGame[x,y] == None):
+        player=self.BoardGame[x,y]
+        if((player == None)or(team!=player.GetTeam())):
             return True
-        
         else:
-            player = self.BoardGame[x,y]
-            
-            Team = player.GetTeam()
-            if(team != Team):
-            
-            
-                return True
-        return False
+            return False
     
      #cheak if in square exist enemy
     def NoEnemy(self,NewPos,team):
@@ -171,7 +164,7 @@ class Board():
         
     #בדיקה אם כתוצאה מהמהלך המלך תחת איום
     def KingTreat(self,team,player,NewPos):
-        #return True
+    #    return True
        # if(player.GetName=="Knight"):
        
         KingThreatBool=True
@@ -179,27 +172,35 @@ class Board():
         t,z = NewPos
         self.BoardGame[X,Y] = None
         self.BoardGame[t,z] = player
+
+       # self.BoardGame[X,Y]=player                                  
+        #self.BoardGame[t,z]=None
+        #return KingThreatBool
         if(team == True):
             KingW = self.Whites[0]
-                        
+            
+          #  mone=0                
             for Element in self.Blacks:
                    
                 if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):                        #בודק האם המלך (שהפך למלכה לצורך הבדיקה)-יכול לאכול את הרץ או הצריח או המלכה
                         # ,אם הוא יכול, אז ההערך המתקבל הוא "שקר" ואם לא-אמת.
-                        
-                        KingThreatBool = Element.IsValidMove([t,z],self,0)
-
+                    
+                        KingThreatBool = Element.IsValidMove(KingW.GetPos(),self,0)
+                     #   if(Element.GetName() == "Pawn"): 
+                      #      mone=mone+1
+                      #  if(mone==7):
+                       #        print("hhhmone")
                         if(KingThreatBool==False):
-
-                              break
+                            #print("hhh")
+                            break
 
 
             self.BoardGame[X,Y]=player                                  
-            self.BoardGame[NewPos]=None
+            self.BoardGame[t,z]=None
             return KingThreatBool
 
         else:
-
+        
                KingB = self.Blacks[0]
                for Element in self.Whites:
                  
@@ -207,27 +208,34 @@ class Board():
                       #,אם הוא יכול, אז ההערך המתקבל הוא "שקר" ואם לא-אמת.
                            
                           
-                           KingThreatBool = Element.IsValidMove([t,z],self,0)
+                           KingThreatBool = Element.IsValidMove(KingB.GetPos(),self,0)
                            if(KingThreatBool==False):  
                                  break
 
 
 
                self.BoardGame[X,Y]=player
-               self.BoardGame[NewPos]=None
+               self.BoardGame[t,z]=None
                
                return KingThreatBool
+    def Change_turn(self):
+        if(self.Move==True):
+            Move=False
+        else:
+            Move=True
 
-            
-                    
+    def Of_whom_the_turn(self,player):
+        if(self.Move==player.GetTeam())
+        
+        
+        pass
     
     def MovePlayer(self,PosNow,PosTarget):
         #we want to remove this player from the list!
         player = self.BoardGame[PosNow]
         RemoveMe = self.BoardGame[PosTarget]
-
         if(player == None):
-            print("no player there")
+            print("no player there.")
             return False
         IsValid = player.IsValidMove(PosTarget,self)
         if(IsValid == True):
@@ -254,7 +262,6 @@ class Board():
             print("the player cant move to there!cheak for anoter option")
             return False
 
-        
           
         
             
@@ -287,8 +294,7 @@ class Players(ABC):
     def IsValidMove(self):
         pass
     
-    def NoPlayersInWay(self,NewPos):
-        pass        
+           
 
 class King(Players):
     
@@ -424,7 +430,7 @@ class Bishop(Players): #runner..
 
 
         elif(Flag==0):
-            if((abs(x - X) == abs(y - Y)) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos, Board))):
+            if((abs(x - X) == abs(y - Y)) and (self.NoPlayersInWay(NewPos, Board))):
                 return False
             else:
                 return True
@@ -728,7 +734,7 @@ class Pawn(Players):
                 return True
 
         
-        #TODO add en passant option!
+#TODO add en passant option!
 
 class Knight(Players):  #horse..
 
@@ -761,11 +767,10 @@ class Knight(Players):  #horse..
 def main():
      board = Board()
      
-     board.MovePlayer((6,4), (5,4))
-     board.MovePlayer((1,5), (2,5))
-     b=board.MovePlayer((1,3), (2,3))
-     a=board.MovePlayer((7,3), (3,7))
-     print("dfd")
+     board.MovePlayer((6,4), (4,4))
+     board.MovePlayer((4,4), (3,4))
+    # board.MovePlayer((1,3), (2,3))
+    # board.MovePlayer((7,3), (3,7))
     # board.MovePlayer((0,4), (1,3))
      
 
@@ -878,7 +883,6 @@ if __name__ == "__main__":
     #KingThreat
     
     #14/6 have to add conditions for queen, and the func KingThreat
-    #TODO ! צריך לתקן את התנועה של הסוסים 2 למטה ואחד שמאלה-לא עובד.
     #לתקן את הבעיה שמשום מה הוא מזיז לי מהליסט 
     
     
