@@ -159,9 +159,30 @@ class Board():
                 return True
         return False
 
-            
-    
+#בדיקה אחרי מהלך של המלך, לבדוק אם *הוא* באיום
+    def CheckForKing(self,team,NewPos):
+        KingThreatBool=True
+
+        if(team == True):
+            for Element in self.Blacks:
+                   
+                if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
+                    KingThreatBool=Element.IsValidMove(NewPos,self,0)
+                    if(KingThreatBool==False):
+                        print(Element.GetName())
+                        return False
+            return True
         
+        if(team == False):
+            for Element in self.Whites:
+                if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
+                    KingThreatBool=Element.IsValidMove(NewPos,self,0)
+                    if(KingThreatBool==False):
+                        print(Element.GetName())
+                        return False
+            return True
+
+                    
     #בדיקה אם כתוצאה מהמהלך המלך תחת איום
     def KingTreat(self,team,player,NewPos):
     #    return True
@@ -170,33 +191,30 @@ class Board():
         KingThreatBool=True
         X,Y = player.GetPos()
         t,z = NewPos
+        PosNow=X,Y
         self.BoardGame[X,Y] = None
         self.BoardGame[t,z] = player
+        
 
-       # self.BoardGame[X,Y]=player                                  
-        #self.BoardGame[t,z]=None
-        #return KingThreatBool
+            
+
         if(team == True):
             KingW = self.Whites[0]
-            
-          #  mone=0                
+            #if(player.GetName()=="King"):
+             #   player.SetPos(NewPos)
             for Element in self.Blacks:
                    
                 if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):                        #בודק האם המלך (שהפך למלכה לצורך הבדיקה)-יכול לאכול את הרץ או הצריח או המלכה
                         # ,אם הוא יכול, אז ההערך המתקבל הוא "שקר" ואם לא-אמת.
-                    
+                            
+                        
                         KingThreatBool = Element.IsValidMove(KingW.GetPos(),self,0)
-                     #   if(Element.GetName() == "Pawn"): 
-                      #      mone=mone+1
-                      #  if(mone==7):
-                       #        print("hhhmone")
-                        if(KingThreatBool==False):
-                            #print("hhh")
-                            break
+                        if(KingThreatBool==False):  
+                              break
 
-
-            self.BoardGame[X,Y]=player                                  
+            player.SetPos(PosNow)
             self.BoardGame[t,z]=None
+            self.BoardGame[X,Y]=player                                  
             return KingThreatBool
 
         else:
@@ -206,61 +224,76 @@ class Board():
                  
                    if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
                       #,אם הוא יכול, אז ההערך המתקבל הוא "שקר" ואם לא-אמת.
-                           
-                          
+                          # if(player.GetName()=="King"):
+                           #    player.SetPos(NewPos)
+                            #   print(player.GetPos())
+
                            KingThreatBool = Element.IsValidMove(KingB.GetPos(),self,0)
                            if(KingThreatBool==False):  
                                  break
 
 
-
-               self.BoardGame[X,Y]=player
+               player.SetPos(PosNow)
                self.BoardGame[t,z]=None
-               
+               self.BoardGame[X,Y]=player
                return KingThreatBool
+           
+           #פונקצייה שמשנה את התור
     def Change_turn(self):
         if(self.Move==True):
-            Move=False
+            self.Move=False
         else:
-            Move=True
-
-    def Of_whom_the_turn(self,player):
-        if(self.Move==player.GetTeam())
+            self.Move=True
+#פונקצייה שבודקת של מי התור עכשיו
+    def Of_whom_the_turn(self,Team):
+        if(self.Move==Team):
+            return True
+        else:
+            return False
+            
         
-        
-        pass
     
     def MovePlayer(self,PosNow,PosTarget):
         #we want to remove this player from the list!
         player = self.BoardGame[PosNow]
         RemoveMe = self.BoardGame[PosTarget]
+        
         if(player == None):
+            
             print("no player there.")
+            
             return False
-        IsValid = player.IsValidMove(PosTarget,self)
-        if(IsValid == True):
-            
-            self.BoardGame[PosTarget] = self.BoardGame[PosNow]
-            self.BoardGame[PosNow] = None
-            player.SetPos(PosTarget)
-            if(RemoveMe == None):
-                return True
-            else:
-                team = RemoveMe.GetTeam()
-                if(team == True):
-                    self.Whites.remove(RemoveMe)
-                    del RemoveMe
-                    return True
-                    
-    
-                elif(team == False):
-                    self.Blacks.remove(RemoveMe)
-                    del RemoveMe
-                    return True
-            
+        turn=self.Of_whom_the_turn(player.GetTeam())
+        if(turn==False):
+            print("its not your turn!!!liar!")
+            return 
         else:
-            print("the player cant move to there!cheak for anoter option")
-            return False
+            
+            
+            IsValid = player.IsValidMove(PosTarget,self)
+            
+            if(IsValid == True):
+                self.Change_turn()
+                self.BoardGame[PosTarget] = self.BoardGame[PosNow]
+                self.BoardGame[PosNow] = None
+                player.SetPos(PosTarget)
+                if(RemoveMe == None):
+                    return True
+                else:
+                    team = RemoveMe.GetTeam()
+                    if(team == True):
+                        self.Whites.remove(RemoveMe)
+                        del RemoveMe
+                        return True
+                        
+                    elif(team == False):
+                        self.Blacks.remove(RemoveMe)
+                        del RemoveMe
+                        return True
+                
+            else:
+                print("the" ,player.GetName(),"cant move to there!cheak for anoter option")
+                return False
 
           
         
@@ -302,18 +335,24 @@ class King(Players):
     
 # Check if the move is Valid for this player.
 
-    def IsValidMove(self,NewPos,Board):
+    def IsValidMove(self,NewPos,Board,Flag=1):
         x,y = self.GetPos()
         X,Y = NewPos
         team = self.GetTeam()
+        #TODO  bug fix-if exist threat on the king ,the king can run away one step from the threat.
+        #and to fix the bug with the pawn-(simple).
+       # lastbug??????
         
-        if(((x == X - 1) and (y == Y) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X + 1) and (y == Y) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y - 1) and (x == X) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y + 1) and (x == X) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y + 1) and (x == X + 1) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y - 1) and (x == X - 1) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y + 1) and (x == X - 1) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y - 1) and (x == X + 1) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos)))):
+        if(False==Board.CheckForKing(team,NewPos)):
+            print("invalid move,cheak another option")
+            return False
+        
+      
+        if(((x == X - 1) and (y == Y) and (Board.NoFriend(NewPos,team))) or ((x == X + 1) and (y == Y) and (Board.NoFriend(NewPos,team)) ) or ((y == Y - 1) and (x == X) and (Board.NoFriend(NewPos,team)) ) or ((y == Y + 1) and (x == X) and (Board.NoFriend(NewPos,team)) ) or ((y == Y + 1) and (x == X + 1) and (Board.NoFriend(NewPos,team)) ) or ((y == Y - 1) and (x == X - 1) and (Board.NoFriend(NewPos,team)) ) or ((y == Y + 1) and (x == X - 1) and (Board.NoFriend(NewPos,team)) ) or ((y == Y - 1) and (x == X + 1) and (Board.NoFriend(NewPos,team)) )):
             return True
         #TODO have Hazracha..
 
 class Steeple(Players): #Tura..
-
-
 
     name = "Steeple"
 #cheak if the move is Valid for this player
@@ -345,7 +384,6 @@ class Steeple(Players): #Tura..
         X,Y = NewPos
         team = self.GetTeam()
         flag = 0
-#TODO לבדוק בפעם אחת את כל התחום, במקום לבדוק אחד אחד..
         if(x > X) and (y == Y):
             for i in range(x,X,-1):
                 Pos = i - 1,y
@@ -723,12 +761,22 @@ class Pawn(Players):
       
         team = self.GetTeam()
         if(Flag==1):
-            if(((x == X) and (Y == y + 1) and (team == False) and (Board.NoEnemy(NewPos,team)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X) and (Y == y - 1) and (team == True) and (Board.NoEnemy(NewPos,team)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X) and (Y == y + 2) and (team == False) and (Board.NoEnemy(NewPos,team)) and (self.IsFirsMove(Board)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X) and (Y == y - 2) and (team == True) and (Board.NoEnemy(NewPos,team)) and (self.IsFirsMove(Board)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X + 1) and (y == Y + 1) and (team == True) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X - 1) and (y == Y + 1) and (team == True) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X + 1) and (y == Y - 1) and (team == False) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X - 1) and (y == Y - 1) and (team == False) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos)))):
+            if(((x == X) and (Y == y + 1) and (team == False) and (Board.NoEnemy(NewPos,team)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X) and (Y == y - 1) and (team == True) and (Board.NoEnemy(NewPos,team)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X) and (Y == y + 2) and (team == False) and (Board.NoEnemy(NewPos,team)) and (self.IsFirsMove(Board)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos)))
+               or ((x == X) and (Y == y - 2) and (team == True) and (Board.NoEnemy(NewPos,team)) and (self.IsFirsMove(Board)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X + 1) and (y == Y + 1) and (team == True) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X - 1) and (y == Y + 1) and (team == True) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X + 1) and (y == Y - 1) and (team == False) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X - 1) and (y == Y - 1) and (team == False) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos)))):
                 return True
             else:
                 return False
         elif(Flag==0):
-            if(((x == X) and (Y == y + 1) and (team == False) and (Board.NoEnemy(NewPos,team)) and (Board.NoFriend(NewPos,team)) ) or ((x == X) and (Y == y - 1) and (team == True) and (Board.NoEnemy(NewPos,team)) and (Board.NoFriend(NewPos,team))) or ((x == X) and (Y == y + 2) and (team == False) and (Board.NoEnemy(NewPos,team)) and (self.IsFirsMove(Board)) and (Board.NoFriend(NewPos,team))) or ((x == X) and (Y == y - 2) and (team == True) and (Board.NoEnemy(NewPos,team)) and (self.IsFirsMove(Board)) and (Board.NoFriend(NewPos,team))) or ((x == X + 1) and (y == Y + 1) and (team == True) and (False == Board.NoEnemy(NewPos,team))) or ((x == X - 1) and (y == Y + 1) and (team == True) and (False == Board.NoEnemy(NewPos,team))) or ((x == X + 1) and (y == Y - 1) and (team == False) and (False == Board.NoEnemy(NewPos,team))) or ((x == X - 1) and (y == Y - 1) and (team == False) and (False == Board.NoEnemy(NewPos,team)))):
+            if(((x == X + 1) and (y == Y + 1) and (team == True) and ( Board.NoEnemy(NewPos,team))) 
+               or ((x == X - 1) and (y == Y + 1) and (team == True) and (Board.NoEnemy(NewPos,team))) 
+               or ((x == X + 1) and (y == Y - 1) and (team == False) and ( Board.NoEnemy(NewPos,team))) 
+               or ((x == X - 1) and (y == Y - 1) and (team == False) and ( Board.NoEnemy(NewPos,team)))):
                 return False
             else:
                 return True
@@ -767,11 +815,13 @@ class Knight(Players):  #horse..
 def main():
      board = Board()
      
-     board.MovePlayer((6,4), (4,4))
-     board.MovePlayer((4,4), (3,4))
-    # board.MovePlayer((1,3), (2,3))
-    # board.MovePlayer((7,3), (3,7))
-    # board.MovePlayer((0,4), (1,3))
+     board.MovePlayer((7,4), (7,4))
+     board.MovePlayer((7,4), (7,4))
+
+     #board.MovePlayer((1,4), (2,4))
+     #board.MovePlayer((6,5), (5,5))
+    # board.MovePlayer((0,3), (4,7))
+   #  board.MovePlayer((7,4), (6,3))
      
 
 
@@ -865,7 +915,7 @@ def main():
 
   #  print("---------------------------")
     
-     print(board.BoardGame)
+  # print(board.BoardGame)
 
     
    
