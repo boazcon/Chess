@@ -341,7 +341,7 @@ class King(Players):
         team = self.GetTeam()
         #TODO  bug fix-if exist threat on the king ,the king can run away one step from the threat.
         #and to fix the bug with the pawn-(simple).
-       # lastbug??????
+       # lastbug??????--no
         
         if(False==Board.CheckForKing(team,NewPos)):
             print("invalid move,cheak another option")
@@ -383,65 +383,45 @@ class Steeple(Players): #Tura..
         x,y = self.GetPos()
         X,Y = NewPos
         team = self.GetTeam()
-        flag = 0
         if(x > X) and (y == Y):
-            for i in range(x,X,-1):
-                Pos = i - 1,y
-                if(True == Board.NoFriend(Pos,team)):
-                    if(True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
-                        return False
-                else:
-                    return False
-            if(flag == 1):
-                return True 
             
+             for i in range(x-1,X,-1):
+                 x=x-1
+                 print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                    return False
+             return True
+       
+             
+         
         if(x < X) and (y == Y):
-            for i in range(x,X):
-                Pos = i + 1,y                
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = i,y
-                    if (True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
+             for i in range(x,X-1):
+                 x=x+1
+                 print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+    
+                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                         return False
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+    
+             return True 
         if(y > Y) and (X == x):
-            for i in range(y,Y,-1):
-                
-                Pos = x,i - 1
-                
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x,i
-
-                    if (True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
+             for i in range(y-1,Y,-1):
+                 y=y-1
+                 print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+                 
+                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                         return False
-                else:
-                    return False
-            if(flag == 1):
-                return True 
-                
+    
+             return True 
+             
         if(y < Y) and (X == x):
-            for i in range(y,Y):
-                Pos = x,i + 1
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x,i
-
-                    if(True == Board.NoEnemy(Pos,team)):
-
-                        flag = 1
-                    else:
+             for i in range(y,Y-1):
+                 y=y+1
+                 print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+    
+                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                         return False
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+
+             return True 
         
         
         else:
@@ -479,76 +459,46 @@ class Bishop(Players): #runner..
         x,y = self.GetPos()
         X,Y = NewPos
         team = self.GetTeam()
-        flag = 0
         if(x < X) and (y < Y):
-            for i in range(abs(x - X)):
-                Pos = x + i + 1,y + i + 1
-                
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x + i,y + i
-                    if(True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
-                        return False
-
-
-                    
-
-                else:
+           
+            for i in range(abs(x - X)-1):
+                x,y=x+1,y+1
+                print("range:",abs(x - X)-1,"x,y",x,y,"i:",i)
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                     return False
-            if(flag == 1):
-                return True 
+              
+            return True
+
+           
             
         if(x > X) and (y < Y):
             
-            for i in range(abs(x - X)):
-                Pos = x - i - 1,y + i + 1
+            for i in range(abs(x - X)-1):
+                x,y=x-1,y+1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                    return False
 
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x - i,y + i
-                    if(True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
-                         return False  
+                return True
 
-                else:
-                    return False            
-            if(flag == 1):
-                return True 
+               
         
         if(x < X) and (y > Y):
             
-            for i in range(abs(x - X)):
-                Pos = x + i + 1,y - i - 1
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x + i,y - i
-                    if(True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                        
-                    else:                   
-                        return False
+            for i in range(abs(x - X)-1):
+                x,y=x+1,y-1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
 
-                        
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+            return True
 
         if(x > X) and (y > Y):
-             
-            for i in range(abs(x - X)):
-                Pos = x - i - 1,y - i - 1
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x - i,y - i
-                    if(True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
-                        return False
-                        
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+            for i in range(abs(x - X)-1):
+                x,y=x-1,y-1
+
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
+
+            return True
         
         
         
@@ -592,146 +542,94 @@ class Queen(Players):
 
        team = self.GetTeam()
        #cheak if its runner move
-       flag = 0
        if(x < X) and (y < Y):
-            for i in range(abs(x - X)):
-                Pos = x + i + 1,y + i + 1
-                
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x + i,y + i
-                
-                    if(True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
-                        return False
-
-                else:
-
+           
+            for i in range(abs(x - X)-1):
+                x,y=x+1,y+1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                     return False
+              
+            return True
 
-            if(flag == 1):
-                return True 
+           
             
        if(x > X) and (y < Y):
             
-            for i in range(abs(x - X)):
-                Pos = x - i - 1,y + i + 1
+            for i in range(abs(x - X)-1):
+                x,y=x-1,y+1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                    return False
 
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x - i,y + i
-                    if(True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
-                         return False  
+            return True
 
-                else:
-                    return False            
-            if(flag == 1):
-                return True 
+               
         
        if(x < X) and (y > Y):
             
-            for i in range(abs(x - X)):
-                Pos = x + i + 1,y - i - 1
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x + i,y - i
-                    if(True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                        
-                    else:                   
-                        return False
+            for i in range(abs(x - X)-1):
+                x,y=x+1,y-1
 
-                        
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
+
+            return True
 
        if(x > X) and (y > Y):
-            for i in range(abs(x - X)):
-                Pos = x - i - 1,y - i - 1
-                print(Board.BoardGame[Pos])
-                if(True == Board.NoFriend(Pos,team)):
+            for i in range(abs(x - X)-1):
+                x,y=x-1,y-1
 
-                    Pos = x - i,y - i
-                    if(True == Board.NoEnemy(Pos,team)):
-                        print(Board.BoardGame[Pos])
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
 
-                        flag = 1
-                    else:
-                        return False
-                        
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+            return True
           
                    
    #cheak if its steeple move
        elif((x == X) and (Y != y) or ((x != X) and (Y == y))):
-           flag = 0
            if(x > X) and (y == Y):
-            for i in range(x,X,-1):
+               
+            for i in range(x-1,X,-1):
+                x=x-1
+                print("range:",range(x-1,X),"x,y",x,y,"i:",i)
                 Pos = i - 1,y
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = i,y
-                    
-                    if(True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
-                        return False
-
-
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
+            return True
+          
+                
             
            if(x < X) and (y == Y):
-            for i in range(x,X):
-                Pos = i + 1,y                
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = i,y
-                    if (True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
-                        return False
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+            for i in range(x,X-1):
+                x=x+1
+                Pos = i,y
+                print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                       return False
+
+            return True 
            if(y > Y) and (X == x):
-            for i in range(y,Y,-1):
-                
+            for i in range(y-1,Y,-1):
+                y=y-1
+                print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+
                 Pos = x,i - 1
                 
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x,i
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                       return False
 
-                    if (True == Board.NoEnemy(Pos,team)):
-                        flag = 1
-                    else:
-                        return False
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+            return True 
                 
            if(y < Y) and (X == x):
-            for i in range(y,Y):
+            for i in range(y,Y-1):
+                y=y+1
+                print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+
                 Pos = x,i + 1
-                if(True == Board.NoFriend(Pos,team)):
-                    Pos = x,i
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                       return False
 
-                    if(True == Board.NoEnemy(Pos,team)):
-
-                        flag = 1
-                    else:
-                        return False
-                else:
-                    return False
-            if(flag == 1):
-                return True 
+            return True 
         
         
            else:
