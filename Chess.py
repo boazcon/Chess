@@ -478,7 +478,7 @@ class Bishop(Players): #runner..
                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                     return False
 
-                return True
+            return True
 
                
         
@@ -590,8 +590,6 @@ class Queen(Players):
                
             for i in range(x-1,X,-1):
                 x=x-1
-                print("range:",range(x-1,X),"x,y",x,y,"i:",i)
-                Pos = i - 1,y
                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                    return False
             return True
@@ -599,33 +597,25 @@ class Queen(Players):
                 
             
            if(x < X) and (y == Y):
-            for i in range(x,X-1):
+             for i in range(x,X-1):
                 x=x+1
-                Pos = i,y
-                print("range:",range(x-1,X),"x,y",x,y,"i:",i)
 
                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                        return False
 
-            return True 
+             return True 
            if(y > Y) and (X == x):
-            for i in range(y-1,Y,-1):
-                y=y-1
-                print("range:",range(x-1,X),"x,y",x,y,"i:",i)
-
-                Pos = x,i - 1
-                
-                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
-                       return False
-
-            return True 
+               
+                for i in range(y-1,Y,-1):
+                    y=y-1
+                    if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                           return False
+    
+                return True 
                 
            if(y < Y) and (X == x):
             for i in range(y,Y-1):
                 y=y+1
-                print("range:",range(x-1,X),"x,y",x,y,"i:",i)
-
-                Pos = x,i + 1
                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                        return False
 
@@ -832,5 +822,4 @@ if __name__ == "__main__":
     
     #14/6 have to add conditions for queen, and the func KingThreat
     #לתקן את הבעיה שמשום מה הוא מזיז לי מהליסט 
-    
     
