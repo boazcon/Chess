@@ -161,25 +161,47 @@ class Board():
 
 #בדיקה אחרי מהלך של המלך, לבדוק אם *הוא* באיום
     def CheckForKing(self,team,NewPos):
+        #בדיקה אם כתוצאה מתזוזת המלך הוא נכנס לאיום. הקוד גם מכסה " בריחה " של המלך משבצת נוספת , לוודא שאם הוא נמצא כרגע באיום והוא בורח למקום אחר(עם אותו איום, כג' על אותו קו) שעדיין יהיה false
         KingThreatBool=True
-
+        print(self.BoardGame[NewPos])
         if(team == True):
+            KingW=self.Whites[0]
+            X,Y = KingW.GetPos()
+            t,z = NewPos
+            PosNow=X,Y
+            self.BoardGame[X,Y] = None
+            self.BoardGame[t,z] = KingW
             for Element in self.Blacks:
-                   
                 if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
                     KingThreatBool=Element.IsValidMove(NewPos,self,0)
                     if(KingThreatBool==False):
                         print(Element.GetName())
+                        KingW.SetPos(PosNow)
+                        self.BoardGame[t,z]=None
+                        self.BoardGame[X,Y]=KingW
                         return False
+            self.BoardGame[t,z]=None
+            self.BoardGame[X,Y]=KingW
             return True
         
         if(team == False):
+            KingB=self.Blacks[0]
+            X,Y = KingB.GetPos()
+            t,z = NewPos
+            PosNow=X,Y
+            self.BoardGame[X,Y] = None
+            self.BoardGame[t,z] = KingB
             for Element in self.Whites:
                 if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
                     KingThreatBool=Element.IsValidMove(NewPos,self,0)
                     if(KingThreatBool==False):
                         print(Element.GetName())
+                        KingB.SetPos(PosNow)
+                        self.BoardGame[t,z]=None
+                        self.BoardGame[X,Y]=KingB
                         return False
+            self.BoardGame[t,z]=None
+            self.BoardGame[X,Y]=KingB
             return True
 
                     
@@ -224,9 +246,7 @@ class Board():
                  
                    if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
                       #,אם הוא יכול, אז ההערך המתקבל הוא "שקר" ואם לא-אמת.
-                          # if(player.GetName()=="King"):
-                           #    player.SetPos(NewPos)
-                            #   print(player.GetPos())
+                          
 
                            KingThreatBool = Element.IsValidMove(KingB.GetPos(),self,0)
                            if(KingThreatBool==False):  
@@ -339,9 +359,9 @@ class King(Players):
         x,y = self.GetPos()
         X,Y = NewPos
         team = self.GetTeam()
-        #TODO  bug fix-if exist threat on the king ,the king can run away one step from the threat.
-        #and to fix the bug with the pawn-(simple).
-       # lastbug??????--no
+        # TODO
+        #לתקן באג שאם אוכלים את האובייקט המאיים-סר האיום
+       # lastbug??????--MYBE??
         
         if(False==Board.CheckForKing(team,NewPos)):
             print("invalid move,cheak another option")
@@ -369,7 +389,6 @@ class Steeple(Players): #Tura..
                 return False
         elif(Flag==0):
             if((x == X) and (Y != y) and (Board.NoFriend(NewPos,team))  and (self.NoPlayersInWay(NewPos,Board)) or ((x != X) and (Y == y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board)))):
-
                 return False
             else:
                 return True
@@ -463,7 +482,6 @@ class Bishop(Players): #runner..
            
             for i in range(abs(x - X)-1):
                 x,y=x+1,y+1
-                print("range:",abs(x - X)-1,"x,y",x,y,"i:",i)
                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                     return False
               
@@ -822,4 +840,5 @@ if __name__ == "__main__":
     
     #14/6 have to add conditions for queen, and the func KingThreat
     #לתקן את הבעיה שמשום מה הוא מזיז לי מהליסט 
+    
     
