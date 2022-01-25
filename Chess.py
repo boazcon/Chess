@@ -207,9 +207,7 @@ class Board():
                     
     #בדיקה אם כתוצאה מהמהלך המלך תחת איום
     def KingTreat(self,team,player,NewPos):
-    #    return True
-       # if(player.GetName=="Knight"):
-       
+    
         KingThreatBool=True
         X,Y = player.GetPos()
         t,z = NewPos
@@ -222,14 +220,15 @@ class Board():
 
         if(team == True):
             KingW = self.Whites[0]
-            #if(player.GetName()=="King"):
-             #   player.SetPos(NewPos)
+            
             for Element in self.Blacks:
                    
                 if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):                        #בודק האם המלך (שהפך למלכה לצורך הבדיקה)-יכול לאכול את הרץ או הצריח או המלכה
+                       #שורת הקוד הבאה בודק האם האיום נאכל במהלך האחרון
+                        if(NewPos==Element.GetPos()):
+                            break
                         # ,אם הוא יכול, אז ההערך המתקבל הוא "שקר" ואם לא-אמת.
-                            
-                        
+
                         KingThreatBool = Element.IsValidMove(KingW.GetPos(),self,0)
                         if(KingThreatBool==False):  
                               break
@@ -246,7 +245,9 @@ class Board():
                  
                    if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
                       #,אם הוא יכול, אז ההערך המתקבל הוא "שקר" ואם לא-אמת.
-                          
+                           if(NewPos==Element.GetPos()):
+                               break
+                           
 
                            KingThreatBool = Element.IsValidMove(KingB.GetPos(),self,0)
                            if(KingThreatBool==False):  
@@ -360,8 +361,9 @@ class King(Players):
         X,Y = NewPos
         team = self.GetTeam()
         # TODO
-        #לתקן באג שאם אוכלים את האובייקט המאיים-סר האיום
-       # lastbug??????--MYBE??
+        
+        # lastbug??????--MYBE??
+       
         
         if(False==Board.CheckForKing(team,NewPos)):
             print("invalid move,cheak another option")
@@ -679,10 +681,10 @@ class Pawn(Players):
             else:
                 return False
         elif(Flag==0):
-            if(((x == X + 1) and (y == Y + 1) and (team == True) and ( Board.NoEnemy(NewPos,team))) 
-               or ((x == X - 1) and (y == Y + 1) and (team == True) and (Board.NoEnemy(NewPos,team))) 
-               or ((x == X + 1) and (y == Y - 1) and (team == False) and ( Board.NoEnemy(NewPos,team))) 
-               or ((x == X - 1) and (y == Y - 1) and (team == False) and ( Board.NoEnemy(NewPos,team)))):
+            if(((x == X + 1) and (y == Y + 1) and (team == True)) 
+               or ((x == X - 1) and (y == Y + 1) and (team == True)) 
+               or ((x == X + 1) and (y == Y - 1) and (team == False)) 
+               or ((x == X - 1) and (y == Y - 1) and (team == False))):
                 return False
             else:
                 return True
@@ -839,6 +841,4 @@ if __name__ == "__main__":
     #KingThreat
     
     #14/6 have to add conditions for queen, and the func KingThreat
-    #לתקן את הבעיה שמשום מה הוא מזיז לי מהליסט 
-    
     
