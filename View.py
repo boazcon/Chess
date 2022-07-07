@@ -9,7 +9,7 @@ from Chess import *
 
 from ViewBoard import ChessBoard 
 
-FPS=30
+FPS=12
 ROWS ,COLS=8,8
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
@@ -17,28 +17,26 @@ SQUARE_SIZE=WINDOW_WIDTH//COLS
 
 BLACK=(0,0,0)
 WHITE=(255,255,255)
-#from ViewBoard import ViewBoard
 
 LEFT=1
 
-Background=r'C:\Users\user\Desktop\Chess\s8XND.png'
-BlackPAWN=r'C:\Users\user\Desktop\Chess\pieces\bp.png'
-BlaclKnight=r'C:\Users\user\Desktop\Chess\pieces\bN.png'
-BlaclSteeple=r'C:\Users\user\Desktop\Chess\pieces\bR.png'  
-BlacklQueen=r'C:\Users\user\Desktop\Chess\pieces\bQ.png'  
-BlacklKing=r'C:\Users\user\Desktop\Chess\pieces\bK.png'  
-BlackBishop=r'C:\Users\user\Desktop\Chess\pieces\bB.png'
+Background=r'C:\Users\user\Desktop\projects\Chess\pieces\s8XND.png'
+BlackPAWN=r'C:\Users\user\Desktop\projects\Chess\pieces\bp.png'
+BlaclKnight=r'C:\Users\user\Desktop\projects\Chess\pieces\bN.png'
+BlaclSteeple=r'C:\Users\user\Desktop\projects\Chess\pieces\bR.png'
+BlacklQueen=r'C:\Users\user\Desktop\projects\Chess\pieces\bQ.png'
+BlacklKing=r'C:\Users\user\Desktop\projects\Chess\pieces\bK.png'
+BlackBishop=r'C:\Users\user\Desktop\projects\Chess\pieces\bB.png'
 
 
 
-WhitePAWN=r'C:\Users\user\Desktop\Chess\pieces\wp.png'
-WhiteKnight=r'C:\Users\user\Desktop\Chess\pieces\wN.png'
-WhiteSteeple=r'C:\Users\user\Desktop\Chess\pieces\wR.png'  
-WhiteQueen=r'C:\Users\user\Desktop\Chess\pieces\wQ.png'  
-WhiteKing=r'C:\Users\user\Desktop\Chess\pieces\wK.png'  
-WhiteBishop=r'C:\Users\user\Desktop\Chess\pieces\wB.png'
+WhitePAWN=r'C:\Users\user\Desktop\projects\Chess\pieces\wp.png'
+WhiteKnight=r'C:\Users\user\Desktop\projects\Chess\pieces\wN.png'
+WhiteSteeple=r'C:\Users\user\Desktop\projects\Chess\pieces\wR.png'
+WhiteQueen=r'C:\Users\user\Desktop\projects\Chess\pieces\wQ.png'
+WhiteKing=r'C:\Users\user\Desktop\projects\Chess\pieces\wK.png'
+WhiteBishop=r'C:\Users\user\Desktop\projects\Chess\pieces\wB.png'
 
-#CHESSBOARD=pygame.image.load(r'C:\Users\user\Desktop\Chess')
 
 def roundxy(x,y):
     x=int(x/100)
@@ -270,7 +268,7 @@ class ViewBishopWhite(pygame.sprite.Sprite,ViewPlayers):
     
 
     
-#TODO להעביר את הcontroller למקום אחר.
+#TODO  להעביר את הcontroller למקום אחר.
 
 def main():
     
@@ -278,7 +276,6 @@ def main():
     pygame.init()
     WIN=pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT)) 
     pygame.display.set_caption("Game")
-   # CHESSBOARD=pygame.image.load(Background)
     
     BoardChess=ChessBoard()
     Pos_From_To=[]
@@ -418,7 +415,6 @@ def main():
     
     
     
-    
     while(run==True):
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -440,8 +436,7 @@ def main():
                     Flag=board.MovePlayer(Pos_From_To[0], Pos_From_To[1])
                     X,Y=Pos_From_To[0]
                     x,y=Pos_From_To[1]
-                    Pos_From_To.clear()
-                    
+                    Pos_From_To.clear()                  
                         
                     if (Flag==False):
                         Pos_From_To.clear()
@@ -488,21 +483,5 @@ def main():
 
 if __name__ == "__main__":
     main() 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

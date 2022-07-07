@@ -6,312 +6,342 @@ Created on Sat Jun  5 23:31:43 2021
 """
 from abc import ABC ,abstractmethod
 import numpy as np
+from minmax import random_move, heuristic_calculate
 class Controller():
     pass
 
 def roundx(x,y):
-    x=int(x/100)
-    y=int(y/100)
+    x = int(x / 100)
+    y = int(y / 100)
 
     print(x,y)
     
 
 class Board():
-    Whites=[]
-    Blacks=[] #TODO: have to put in private status after
-    BoardGame=np.empty((8,8), dtype=np.object)
+    Whites = []
+    Blacks = [] 
+    sum_black=-10390
+    sum_white=10390
+    Move=True
+    BoardGame = np.empty((8,8), dtype=np.object)
     #oreder the board
     def __init__(self):
 #here I make the king and put in pos ,and add him to list
 
-        KingWhite=King(True,[7,4])
-        KingBlack=King(False,[0,4])
-        self.BoardGame[7,4]=KingWhite
+        KingWhite = King(True,[7,4],10000)
+        KingBlack = King(False,[0,4],-10000)
+        self.BoardGame[7,4] = KingWhite
         self.Whites.append(KingWhite)
-        self.BoardGame[0,4]=KingBlack
+        self.BoardGame[0,4] = KingBlack
         self.Blacks.append(KingBlack)
         
         #here I make the Queen and put in pos ,and add him to list
 
-        QueebWhite=Queen(True,[7,3])
-        QueenBlack=Queen(False,[0,3])
-        self.BoardGame[7,3]=QueebWhite
+        QueebWhite = Queen(True,[7,3],90)
+        QueenBlack = Queen(False,[0,3],-90)
+        self.BoardGame[7,3] = QueebWhite
         self.Whites.append(QueebWhite)
-        self.BoardGame[0,3]=QueenBlack
+        self.BoardGame[0,3] = QueenBlack
         self.Blacks.append(QueenBlack)
         
         
         
 #here I make the steeple(Tura) and put in pos ,and add him to list
-        team=True
-        SteepleWhite1=Steeple(team, [7,7])
-        SteepleWhite2=Steeple(team, [7,0])
+        team = True
+        SteepleWhite1 = Steeple(team, [7,7],50)
+        SteepleWhite2 = Steeple(team, [7,0],50)
         self.Whites.append(SteepleWhite1)
         self.Whites.append(SteepleWhite2)
-        self.BoardGame[7,7]=SteepleWhite1
-        self.BoardGame[7,0]=SteepleWhite2
+        self.BoardGame[7,7] = SteepleWhite1
+        self.BoardGame[7,0] = SteepleWhite2
         
         
-        team=False
-        SteepleBlack1=Steeple(team, [0,7])
-        SteepleBlack2=Steeple(team, [0,0])
+        team = False
+        SteepleBlack1 = Steeple(team, [0,7],-50)
+        SteepleBlack2 = Steeple(team, [0,0],-50)
         self.Blacks.append(SteepleBlack1)
         self.Blacks.append(SteepleBlack2)
-        self.BoardGame[0,7]=SteepleBlack1
-        self.BoardGame[0,0]=SteepleBlack2
+        self.BoardGame[0,7] = SteepleBlack1
+        self.BoardGame[0,0] = SteepleBlack2
         
         
         
 #here I make the Knight and put in pos ,and add him to list
 
-        team=True
-        KnightWhite1=Knight(team, [7,1])
-        KnightWhite2=Knight(team, [7,6])
+        team = True
+        KnightWhite1 = Knight(team, [7,1],30)
+        KnightWhite2 = Knight(team, [7,6],30)
         self.Whites.append(KnightWhite1)
         self.Whites.append(KnightWhite2)
-        self.BoardGame[7,1]=KnightWhite1
-        self.BoardGame[7,6]=KnightWhite2
+        self.BoardGame[7,1] = KnightWhite1
+        self.BoardGame[7,6] = KnightWhite2
         
         
-        team=False
-        KnightBlack1=Knight(team, [0,1])
-        KnightBlack2=Knight(team, [0,6])
+        team = False
+        KnightBlack1 = Knight(team, [0,1],-30)
+        KnightBlack2 = Knight(team, [0,6],-30)
         self.Blacks.append(KnightBlack1)
         self.Blacks.append(KnightBlack2)
-        self.BoardGame[0,1]=KnightBlack1
-        self.BoardGame[0,6]=KnightBlack2
+        self.BoardGame[0,1] = KnightBlack1
+        self.BoardGame[0,6] = KnightBlack2
 
 
 #here I make the Bishops and put in pos ,and add him to list
-        team=True
-        BishopsWhite1=Bishop(team, [7,2])
-        BishopWhite2=Bishop(team, [7,5])
+        team = True
+        BishopsWhite1 = Bishop(team, [7,2],30)
+        BishopWhite2 = Bishop(team, [7,5],30)
         self.Whites.append(BishopsWhite1)
         self.Whites.append(BishopWhite2)
-        self.BoardGame[7,2]=BishopsWhite1
-        self.BoardGame[7,5]=BishopWhite2
+        self.BoardGame[7,2] = BishopsWhite1
+        self.BoardGame[7,5] = BishopWhite2
 
 
         
-        team=False
-        BishopBlack1=Bishop(team, [0,2])
-        BishopBlack2=Bishop(team, [0,5])
+        team = False
+        BishopBlack1 = Bishop(team, [0,2],-30)
+        BishopBlack2 = Bishop(team, [0,5],-30)
         self.Blacks.append(BishopBlack1)
         self.Blacks.append(BishopBlack2)
-        self.BoardGame[0,2]=BishopBlack1
-        self.BoardGame[0,5]=BishopBlack2
+        self.BoardGame[0,2] = BishopBlack1
+        self.BoardGame[0,5] = BishopBlack2
 
 
 
 
 #here I make the pawns and put in pos ,and add him to list
-        team=False
+        team = False
         for i in range(8):
-            pawn=Pawn(team,[1,i])
-            self.BoardGame[1,i]=pawn
+            pawn = Pawn(team,[1,i],-10)
+            self.BoardGame[1,i] = pawn
             self.Blacks.append(pawn)
             
             
-        team=True
+        team = True
         for i in range(8):
-            pawn=Pawn(team,[6,i])
-            self.BoardGame[6,i]=pawn
+            pawn = Pawn(team,[6,i],10)
+            self.BoardGame[6,i] = pawn
             self.Whites.append(pawn)
 
             
-     
-            
-        
-        
-        
     #when u want to re-board
     def ReGame(self):
         pass
     
-    
-    
         
-    #
+    
     def GetPlayerName(self,x,y):
         return self.BoardGame[x,y].GetName()
     
-    
     #cheak if in square exist friend
+   
+   
     def NoFriend(self,NewPos,team): 
-       #TODO בשורה אחת של קוד!
-        if(self.BoardGame[NewPos]==None):
+        x,y = NewPos
+        player=self.BoardGame[x,y]
+        if((player == None) or (team!=player.GetTeam())):
             return True
-
         else:
-            player=self.BoardGame[NewPos]
-            
-            Team=player.GetTeam()
-            if(team!=Team):
-            
-            
-                return True
-        return False
+            return False
+    
     
      #cheak if in square exist enemy
     def NoEnemy(self,NewPos,team):
-        if(self.BoardGame[NewPos]==None):
+        print("newpos", NewPos)
+        x,y=NewPos
+        print("x and y:",x,y)
+        if(self.BoardGame[x,y] == None):
             return True
         else:
-            player=self.BoardGame[NewPos]
-            Team=player.GetTeam()
-            if(team==Team):
+            player = self.BoardGame[NewPos]
+            Team = player.GetTeam()
+            if(team == Team):
                 return True
         return False
-
-            
     
+
+#בדיקה אחרי מהלך של המלך, לבדוק אם *הוא* באיום
+    def CheckForKing(self,team,NewPos):
+        #בדיקה אם כתוצאה מתזוזת המלך הוא נכנס לאיום. הקוד גם מכסה " בריחה " של המלך משבצת נוספת , לוודא שאם הוא נמצא כרגע באיום והוא בורח למקום אחר(עם אותו איום, כג' על אותו קו) שעדיין יהיה false
         
-    #cheak if after the move the king in threat
-    def KingTreat(self,team,player,NewPos):
-        #להבין למה בחיילים שחורים הוא לא עושה בדיקה כראוי(כנראה משו פשוט)
-        #return True
-        
-        KingThreatBool=False
-    #נעלים לרגע , את השחקן שהזזנו על מנת לבדוק אם ההזזה גוררת איום על המלך.
-        x,y=player.GetPos()
-        PlayerPos=player.GetPos()
-        PlayerTemperary=self.BoardGame[x,y]
-        self.BoardGame[x,y]=None
-
-        X,Y=NewPos
-        player.SetPos(NewPos)        
-        self.BoardGame[X,Y]=player
-
-
-
-
-
-#נחליף את המלך של הקבוצה ששחקנה מעוניין לזוז, במלכה
-#על מנת לבדוק האם המלכה יכולה לאכול את הצריח או הרץ בטווח המהלכים האפשרי.
-        KingW=self.Whites[0]
-        KingB=self.Blacks[0]
-        if(team==True):
-
-            pos=KingW.GetPos()
-            QueenForCheak=Queen(True,pos)
-            T,Z=pos
-            self.BoardGame[T,Z]=QueenForCheak
-
+        KingThreatBool=True
+        if(team == True):
+            KingW=self.Whites[0]
+            X,Y = KingW.GetPos()
+            t,z = NewPos
+            player = self.BoardGame[t,z]  
+            PosNow=X,Y
+            self.BoardGame[X,Y] = None
+            self.BoardGame[t,z] = KingW
             for Element in self.Blacks:
-                if((Element.GetName()=="Steeple")or(Element.GetName()=="Queen")
-                    or(Element.GetName()=="Bishop")):
-                    PosTarget=Element.GetPos()
-                    print("from:",QueenForCheak.GetPos(),"TO: ",PosTarget)
-                    KingThreatBool=QueenForCheak.IsValidMove(PosTarget,self,0)
-                    if(KingThreatBool==True):
-                       self.BoardGame[x,y]=PlayerTemperary
-                       self.BoardGame[T,Z]=KingW
-                       player.SetPos(PlayerPos)
-                       self.BoardGame[x,y]=player
-                       return False
-            
-            
-
-                    else:               
-                        continue
-            if(KingThreatBool==False):        
-                self.BoardGame[x,y]=PlayerTemperary
-                self.BoardGame[T,Z]=KingW
-                player.SetPos(PlayerPos)
-                self.BoardGame[x,y]=player
-                return True
-            else:
-                self.BoardGame[x,y]=PlayerTemperary
-                self.BoardGame[T,Z]=KingW
-                player.SetPos(PlayerPos)
-                self.BoardGame[x,y]=player
-                return False
-
-        elif(team==False):
-
-            pos=KingB.GetPos()
-            QueenForCheak=Queen(False,pos)
-            T,Z=pos
-            self.BoardGame[T,Z]=QueenForCheak
-            
-            for Element in self.Whites:
-
-                if((Element.GetName()=="Steeple")or(Element.GetName()=="Queen")
-                    or(Element.GetName()=="Bishop")):
-
-                    PosTarget=Element.GetPos()
-                    print("from:",QueenForCheak.GetPos(),"TO: ",PosTarget)
-
-                    KingThreatBool=QueenForCheak.IsValidMove(PosTarget,self,0)
-
-                    if(KingThreatBool==True):
-                        self.BoardGame[x,y]=PlayerTemperary
-                        self.BoardGame[T,Z]=KingB
-                        player.SetPos(PlayerPos)
-                        self.BoardGame[x,y]=player
+                if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
+                    KingThreatBool=Element.IsValidMove(NewPos,self,0)
+                    if(KingThreatBool==False):
+                        KingW.SetPos(PosNow)
+                        self.BoardGame[t,z] = player
+                        self.BoardGame[X,Y] = KingW
                         return False
-                    else:
-                        continue                        
-            if(KingThreatBool==False):        
-                self.BoardGame[x,y]=PlayerTemperary
-                self.BoardGame[T,Z]=KingB
-                player.SetPos(PlayerPos)
-                self.BoardGame[x,y]=player
-                return True
-            else:
-                self.BoardGame[x,y]=PlayerTemperary
-                self.BoardGame[T,Z]=KingB
-                player.SetPos(PlayerPos)
-                self.BoardGame[x,y]=player
-                return False
+            self.BoardGame[t,z] = player
+            self.BoardGame[X,Y]=KingW
+            return True
+        
+        if(team == False):
+            KingB=self.Blacks[0]
+            X,Y = KingB.GetPos()
+            t,z = NewPos
+            player = self.BoardGame[t,z]  
+
+            PosNow=X,Y
+            self.BoardGame[X,Y] = None
+            self.BoardGame[t,z] = KingB
+            for Element in self.Whites:
+                if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
+                    KingThreatBool=Element.IsValidMove(NewPos,self,0)
+                    if(KingThreatBool==False):
+                        print(Element.GetName())
+                        KingB.SetPos(PosNow)
+                        self.BoardGame[t,z]= player
+                        self.BoardGame[X,Y]=KingB
+                        return False
+            self.BoardGame[t,z] = player
+            self.BoardGame[X,Y] = KingB
+            return True
+
                     
+    #בדיקה אם כתוצאה מהמהלך המלך תחת איום
+    def KingTreat(self,team,player,NewPos):
+    
+        KingThreatBool=True
+        X,Y = player.GetPos()
+        t,z = NewPos
+        PosNow=X,Y
+        self.BoardGame[X,Y] = None
+        self.BoardGame[t,z] = player
+        
+
+            
+
+        if(team == True):
+            KingW = self.Whites[0]
+            
+            for Element in self.Blacks:
+                   
+                if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):                        #בודק האם המלך (שהפך למלכה לצורך הבדיקה)-יכול לאכול את הרץ או הצריח או המלכה
+                       #שורת הקוד הבאה בודק האם האיום נאכל במהלך האחרון
+                        if(NewPos==Element.GetPos()):
+                            break
+                        #(יש מקרה קצה נוסף שהשורה לעיל-228-לא מכסה.
+                        #המקרה הוא שאם אחד הכלים של הלבן זז, וכתוצאה מזה,"נולדו" 2 מקומות שמהם יש איום על המלך השחור.
+                        #אז אם אזיז כלי של השחור על אחד הכלים המאיימים של הלבן, זה יאשר את המהלך, כיון שמבחינתו האיום סר.
+                        #ולכן, מה שצריך לעשות זה להוסיף כאן בדיקה נוספת-for, שיבדוק האם ישנו עוד איום חוץ מהאיום שנמצא כרגע.
+                        #לדעתי המקרה היחיד שבו מקרה קצה זה יכול לקרות זה כשמזיזים את הפרש, ופותחים ציר לאיום על המלך על כלי נוסף-בנוסף לאיום על ידי הפרש עצמו.
+                        #ידיעה זו עשויה לעזור בכיצד לפתור את הבעיה.)
+                        # ,אם הוא יכול, אז ההערך המתקבל הוא "שקר" ואם לא-אמת.
+
+                        KingThreatBool = Element.IsValidMove(KingW.GetPos(),self,0)
+                        if(KingThreatBool==False):  
+                              break
+
+            player.SetPos(PosNow)
+            self.BoardGame[t,z]=None
+            self.BoardGame[X,Y]=player                                  
+            return KingThreatBool
+
+        else:
+        
+               KingB = self.Blacks[0]
+               for Element in self.Whites:
+                 
+                   if((Element.GetName() == "Steeple") or (Element.GetName() == "Queen") or (Element.GetName() == "Bishop")or (Element.GetName() == "Knight")or(Element.GetName() == "Pawn")):
+                      #,אם הוא יכול, אז ההערך המתקבל הוא "שקר" ואם לא-אמת.
+                           if(NewPos==Element.GetPos()):
+                               break
+                           
+
+                           KingThreatBool = Element.IsValidMove(KingB.GetPos(),self,0)
+                           if(KingThreatBool==False):  
+                                 break
+
+
+               player.SetPos(PosNow)
+               self.BoardGame[t,z]=None
+               self.BoardGame[X,Y]=player
+               return KingThreatBool
+           
+           #פונקצייה שמשנה את התור
+    def Change_turn(self):
+        if(self.Move==True):
+            self.Move=False
+        else:
+            self.Move=True
+#פונקצייה שבודקת של מי התור עכשיו
+    def Of_whom_the_turn(self,Team):
+        if(self.Move==Team):
+            return True
+        else:
+            return False
+            
+        
     
     def MovePlayer(self,PosNow,PosTarget):
-        #we want to remove this player from the list!
-        player=self.BoardGame[PosNow]
-        if(player==None):
-            print("no player there")
+        x,y = PosTarget  
+        X ,Y = PosNow
+        if(x < 0 or x > 7  or y < 0 or y > 7):
+            print("out of range")
             return False
-
-        IsValid=player.IsValidMove(PosTarget,self)
-        if(IsValid==True):
-            RemoveMe=self.BoardGame[PosTarget]
-            self.BoardGame[PosTarget]=self.BoardGame[PosNow]
-            self.BoardGame[PosNow]=None
-            player.SetPos(PosTarget)
-            if(RemoveMe==None):
-                return True
-            else:
-                team=RemoveMe.GetTeam()
-                if(team==True):
-                    self.Whites.remove(RemoveMe)
-                    del player
-                    return True
-                    
-    
-                elif(team==False):
-                    
-                    self.Blacks.remove(RemoveMe)
-                    del player
-                    return True
             
-        else:
-            print("the player cant move to there!cheak for anoter option")
+        player = self.BoardGame[X,Y]
+        RemoveMe = self.BoardGame[x,y]
+        if(player == None):
+            print("no player there.")
             return False
+        turn=self.Of_whom_the_turn(player.GetTeam())
+        if(turn==False):
+           print("its not your turn")
+        else:
+            IsValid = player.IsValidMove(PosTarget,self)
+            if(IsValid == True):
+                print("player,", player,"move from:" ,PosNow,"to:",PosTarget)
 
-        
+                self.Change_turn()
+                self.BoardGame[PosTarget] = self.BoardGame[PosNow]
+                self.BoardGame[PosNow] = None
+                player.SetPos(PosTarget)
+                if(RemoveMe == None):
+                    return True
+                else:
+                    team = RemoveMe.GetTeam()
+                    if(team == True):
+                        self.Whites.remove(RemoveMe)
+                        self.sum_white=self.sum_white-RemoveMe.GetValue()
+                        del RemoveMe
+                        print("total value game: ",self.sum_black+self.sum_white)
+
+                        return True
+                        
+                    elif(team == False):
+                        self.Blacks.remove(RemoveMe)
+                        self.sum_black=self.sum_black-RemoveMe.GetValue()
+                        del RemoveMe
+                        print("total value game: ", self.sum_black+self.sum_white)
+
+                        return True
+                
+            else:
+                print("the" ,player.GetName(),"cant move to there!cheak for anoter option")
+                return False
+
           
         
             
 class Players(ABC):
-    
-    __pos=None,None
-    __team=None #true is white
-    __name=None 
-    #TODO  __En_Passant=False:: to devlop after
-    def __init__(self,team,pos):
-        self.team=team
-        self.pos=pos
+    __value=None
+    __pos = None,None
+    __team = None #true is white
+    __name = None 
+    def __init__(self,team,pos,value):
+        self.team = team
+        self.pos = pos
+        self.value = value
         
     def __del__(self):
        pass
@@ -319,140 +349,120 @@ class Players(ABC):
     def GetName(self):
         return self.name
     
+    def GetValue(self):
+        return self.value
     
     def SetPos(self,NewPos):
-        self.pos=NewPos
+        self.pos = NewPos
     def GetPos(self):
         return self.pos
     def SetTeam(self,Boolean):
-        self.team=Boolean
+        self.team = Boolean
     def GetTeam(self):
         return self.team
     @abstractmethod
     def IsValidMove(self):
         pass
+    @abstractmethod
+    def set_of_valid_moves(self):
+        pass
     
-    def NoPlayersInWay(self,NewPos):
-        pass        
+    
+           
 
 class King(Players):
     
-    name="King"
+    name = "King"
     
 # Check if the move is Valid for this player.
 
-    def IsValidMove(self,NewPos,Board):
-        x,y=self.GetPos()
-        X,Y=NewPos
-        team=self.GetTeam()
+    def IsValidMove(self,NewPos,Board,Flag=1):
+        x,y = self.GetPos()
+        X,Y = NewPos
+        team = self.GetTeam()
+        #print("newpos", NewPos)
+       # print("firs,",Board.BoardGame)
         
-        if(((x==X-1)and(y==Y)and(Board.NoFriend(NewPos,team))
-           and(Board.KingTreat(team,self,NewPos)))
-           or((x==X+1)and(y==Y)and(Board.NoFriend(NewPos,team))
-           and(Board.KingTreat(team,self,NewPos)))
-           or((y==Y-1)and(x==X)and(Board.NoFriend(NewPos,team))
-           and(Board.KingTreat(team,self,NewPos)))
-           or((y==Y+1)and(x==X)and(Board.NoFriend(NewPos,team))
-           and(Board.KingTreat(team,self,NewPos)))
-           or((y==Y+1)and(x==X+1)and(Board.NoFriend(NewPos,team))
-           and(Board.KingTreat(team,self,NewPos)))
-           or((y==Y-1)and(x==X-1)and(Board.NoFriend(NewPos,team))
-           and(Board.KingTreat(team,self,NewPos)))
-           or((y==Y+1)and(x==X-1)and(Board.NoFriend(NewPos,team))
-           and(Board.KingTreat(team,self,NewPos)))
-           or((y==Y-1)and(x==X+1)and(Board.NoFriend(NewPos,team))
-           and(Board.KingTreat(team,self,NewPos)))
-           ):
+        if(False==Board.CheckForKing(team,NewPos)):
+            print("invalid move,cheak another option")
+            return False
+        
+        if(((x == X - 1) and (y == Y) and (Board.NoFriend(NewPos,team))) or ((x == X + 1) and (y == Y) and (Board.NoFriend(NewPos,team)) ) or ((y == Y - 1) and (x == X) and (Board.NoFriend(NewPos,team)) ) or ((y == Y + 1) and (x == X) and (Board.NoFriend(NewPos,team)) ) or ((y == Y + 1) and (x == X + 1) and (Board.NoFriend(NewPos,team)) ) or ((y == Y - 1) and (x == X - 1) and (Board.NoFriend(NewPos,team)) ) or ((y == Y + 1) and (x == X - 1) and (Board.NoFriend(NewPos,team)) ) or ((y == Y - 1) and (x == X + 1) and (Board.NoFriend(NewPos,team)) )):
             return True
-        #TODO have  Hazracha..
-
-
+        #TODO have Hazracha..
+    def set_of_valid_moves(self):
+        x,y = self.GetPos()
+        return [[x-1,y],[x+1,y],[x,y-1],[x,y+1],[x-1,y-1],[x+1,y+1],[x-1,y+1],[x+1,y-1]]        
+        
 class Steeple(Players): #Tura..
 
-
-
-    name="Steeple"
+    name = "Steeple"
 #cheak if the move is Valid for this player
     
-    def IsValidMove(self,NewPos,Board):
-        x,y=self.GetPos()
-        X,Y=NewPos
-        team=self.GetTeam()
-        
-        if((x==X)and(Y!=y)
-               and(Board.NoFriend(NewPos,team))
-               and((Board.KingTreat(team,self,NewPos)))
-               and(self.NoPlayersInWay(NewPos,Board))
-              
-               or((x!=X)and(Y==y)
-              
-               and((Board.KingTreat(team,self,NewPos)))
-               and(Board.NoFriend(NewPos,team))
-               and(self.NoPlayersInWay(NewPos,Board)))):
-            
-            return True
-        else:
-            return False
+    def IsValidMove(self,NewPos,Board,Flag=1):
+        x,y = self.GetPos()
+        X,Y = NewPos
+        team = self.GetTeam()
+        if(Flag==1):
+            if(((x == X) and (y != Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board)) and (Board.KingTreat(team,self,NewPos)))
+            or((x != X) and (y == Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board)) and (Board.KingTreat(team,self,NewPos)))):
+                return True
+            else:
+                return False
+        elif(Flag==0):
+            if((x == X) and (Y != y) and (Board.NoFriend(NewPos,team))  and (self.NoPlayersInWay(NewPos,Board)) or ((x != X) and (Y == y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board)))):
+                return False
+            else:
+                return True
+
                
             
         
         
     def NoPlayersInWay(self,NewPos,Board):
-        x,y=self.GetPos()
-        X,Y=NewPos
-        team=self.GetTeam()
-        flag=0
-#TODO לבדוק בפעם אחת את כל התחום, במקום לבדוק אחד אחד.. 
-        if(x>X)and(y==Y):
-            for i in range(x,X,-1):
-                Pos=i-1,y
-                if(True==Board.NoFriend(Pos,team)):
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                else:
-                    return False
-            if(flag==1):
-                return True 
+
+        x,y = self.GetPos()
+        X,Y = NewPos
+        team = self.GetTeam()
+        if(x > X) and (y == Y):
             
-        if(x<X)and(y==Y):
-            for i in range(x,X):
-                Pos=i+1,y                
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=i,y
-                    if (True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                else:
+             for i in range(x-1,X,-1):
+                 x=x-1
+                 print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                     return False
-            if(flag==1):
-                return True 
-        if(y>Y)and(X==x):
-            for i in range(y,Y,-1):
-                
-                Pos=x,i-1
-                
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x,i
+             return True
+       
+             
+         
+        if(x < X) and (y == Y):
+             for i in range(x,X-1):
+                 x=x+1
+                 print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+    
+                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                        return False
+    
+             return True 
+        if(y > Y) and (X == x):
+             for i in range(y-1,Y,-1):
+                 y=y-1
+                 print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+                 
+                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                        return False
+    
+             return True 
+             
+        if(y < Y) and (X == x):
+             for i in range(y,Y-1):
+                 y=y+1
+                 print("range:",range(x-1,X),"x,y",x,y,"i:",i)
+    
+                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                        return False
 
-                    if (True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                else:
-                    return False
-            if(flag==1):
-                return True 
-                
-        if(y<Y)and(X==x):
-            for i in range(y,Y):
-                Pos=x,i+1
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x,i
-
-                    if(True==Board.NoEnemy(Pos,team)):
-
-                        flag=1
-                else:
-                    return False
-            if(flag==1):
-                return True 
+             return True 
         
         
         else:
@@ -460,483 +470,313 @@ class Steeple(Players): #Tura..
      
 
         
+    def set_of_valid_moves(self):
         
-        
+        y,x = self.GetPos()
+        #לצורך בדיקה בלבלד!!!!
+        return [[x,y+1],[x,y+2]]
+
 
 class Bishop(Players): #runner..
-    name="Bishop"
+    name = "Bishop"
 #cheak if the move is Valid for this player
 
-    def IsValidMove(self,NewPos,Board):
-        x,y=self.GetPos()
-        X,Y=NewPos
-        team=self.GetTeam()
+    def IsValidMove(self,NewPos,Board,Flag=1):
+        x,y = self.GetPos()
+        X,Y = NewPos
+        team = self.GetTeam()
+        if(Flag==1):
+            if((abs(x - X) == abs(y - Y)) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos, Board)) and (Board.KingTreat(team,self,NewPos))):
+                return True
+            else:
+                return False
 
-        if((abs(x-X)==abs(y-Y))
-           and(Board.KingTreat(team,self,NewPos))
-           and(Board.NoFriend(NewPos,team))
-           and(self.NoPlayersInWay(NewPos, Board))):
+
+        elif(Flag==0):
+            if((abs(x - X) == abs(y - Y)) and (self.NoPlayersInWay(NewPos, Board))):
+                return False
+            else:
+                return True
+
+
+        
+    def NoPlayersInWay(self,NewPos,Board):
+        x,y = self.GetPos()
+        X,Y = NewPos
+        team = self.GetTeam()
+        if(x < X) and (y < Y):
+           
+            for i in range(abs(x - X)-1):
+                x,y=x+1,y+1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                    return False
+              
+            return True
+
+           
+            
+        if(x > X) and (y < Y):
+            
+            for i in range(abs(x - X)-1):
+                x,y=x-1,y+1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                    return False
+
+            return True
+
+               
+        
+        if(x < X) and (y > Y):
+            
+            for i in range(abs(x - X)-1):
+                x,y=x+1,y-1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
+
+            return True
+
+        if(x > X) and (y > Y):
+            for i in range(abs(x - X)-1):
+                x,y=x-1,y-1
+
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
+
             return True
         
         
-    def NoPlayersInWay(self,NewPos,Board):
-        x,y=self.GetPos()
-        X,Y=NewPos
-        team=self.GetTeam()
-        flag=0
-        if(x<X)and(y<Y):
-            for i in range(abs(x-X)):
-                Pos=x+i+1,y+i+1
-                
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x+i,y+i
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                    else:
-                        return False
+    def set_of_valid_moves(self):
+        y,x = self.GetPos()
+        #לצורך בדיקה בלבלד!!!!
 
-
-                    
-
-                else:
-                    return False
-            if(flag==1):
-                return True 
-            
-        if(x>X)and(y<Y):
-            
-            for i in range(abs(x-X)):
-                Pos=x-i-1,y+i+1
-
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x-i,y+i
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                    else:
-                         return False  
-
-                else:
-                    return False            
-            if(flag==1):
-                return True 
-        
-        if(x<X)and(y>Y):
-            
-            for i in range(abs(x-X)):
-                Pos=x+i+1,y-i-1
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x+i,y-i
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                        
-                    else:                   
-                        return False
-
-                        
-                else:
-                    return False
-            if(flag==1):
-                return True 
-
-        if(x>X)and(y>Y):
-             
-            for i in range(abs(x-X)):
-                Pos=x-i-1,y-i-1
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x-i,y-i
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                    else:
-                        return False
-                        
-                else:
-                    return False
-            if(flag==1):
-                return True 
-        
-        
-        
+        return [[x+1,y+1]]
         
 
 
 class Queen(Players):  
     
     
-    name="Queen"
+    name = "Queen"
     #cheak if the move is Valid for this player
 
     def IsValidMove(self,NewPos,Board,Flag=1):
-        x,y=self.GetPos()
-        X,Y=NewPos
-        team=self.GetTeam()
+        x,y = self.GetPos()
+        X,Y = NewPos
+        team = self.GetTeam()
         
-        if (Flag==1):
-        
-            if(abs(x-X)==abs(y-Y) and(Board.KingTreat(team,self,NewPos))
-               and(Board.NoFriend(NewPos,team))
-               and(self.NoPlayersInWay(NewPos,Board))
-               or((x==X)and(y!=Y) and(Board.KingTreat(team,self,NewPos))
-               and(Board.NoFriend(NewPos,team))
-               and(self.NoPlayersInWay(NewPos,Board)))
-               or((x!=X)and (y==Y) and(Board.KingTreat(team,self,NewPos))
-               and(Board.NoFriend(NewPos,team))
-               and(self.NoPlayersInWay(NewPos,Board)))
-              ):
-                return True
+        if (Flag == 1):
+            if(abs(x - X) == abs(y - Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board)) and (Board.KingTreat(team,self,NewPos)) 
+               or ((x == X) and (y != Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board))) and (Board.KingTreat(team,self,NewPos))
+              or ((x != X) and (y == Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board))) and (Board.KingTreat(team,self,NewPos))):
+               return True
             else:
                 return False
-        elif(Flag==0):
-            if(abs(x-X)==abs(y-Y) 
-               and(Board.NoFriend(NewPos,team))
-               and(self.NoPlayersInWay(NewPos,Board))
-               or((x==X)and(y!=Y) 
-               and(Board.NoFriend(NewPos,team))
-               and(self.NoPlayersInWay(NewPos,Board)))
-               or((x!=X)and (y==Y) 
-               and(Board.NoFriend(NewPos,team))
-               and(self.NoPlayersInWay(NewPos,Board)))
-              ):
-                return True
-            else:
+            #flag =0 אומר שהמלכה משמשת כרגע בבדיקה שאין שח על המלך כתוצאה מתזוזה של שחקן מסוים
+        elif(Flag == 0):
+            
+            if(abs(x - X) == abs(y - Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board))
+              or ((x == X) and (y != Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board))) 
+              or ((x != X) and (y == Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board)))):
                 return False
+            else:
+                return True
             
     def NoPlayersInWay(self,NewPos,Board):
-       x,y=self.GetPos()
-       X,Y=NewPos
+       x,y = self.GetPos()
+       X,Y = NewPos
 
 
 
 
-       team=self.GetTeam()
+       team = self.GetTeam()
        #cheak if its runner move
-       flag=0
-       if(x<X)and(y<Y):
-            for i in range(abs(x-X)):
-                Pos=x+i+1,y+i+1
-                
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x+i,y+i
-                    
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                    else:
-                        return False
-
-
-
-                else:
+       if(x < X) and (y < Y):
+           
+            for i in range(abs(x - X)-1):
+                x, y = x+1, y+1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                     return False
-            if(flag==1):
-                return True 
-            
-       if(x>X)and(y<Y):
-            
-            for i in range(abs(x-X)):
-                Pos=x-i-1,y+i+1
+              
+            return True
 
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x-i,y+i
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                    else:
-                         return False  
+           
+            
+       if(x > X) and (y < Y):
+            
+            for i in range(abs(x - X) -1):
+                x,y=x-1,y+1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                    return False
 
-                else:
-                    return False            
-            if(flag==1):
-                return True 
+            return True
+
+               
         
-       if(x<X)and(y>Y):
+       if(x < X) and (y > Y):
             
-            for i in range(abs(x-X)):
-                Pos=x+i+1,y-i-1
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x+i,y-i
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                        
-                    else:                   
-                        return False
+            for i in range(abs(x - X)-1):
+                x,y=x+1,y-1
 
-                        
-                else:
-                    return False
-            if(flag==1):
-                return True 
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
 
-       if(x>X)and(y>Y):
-             
-            for i in range(abs(x-X)):
-                Pos=x-i-1,y-i-1
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x-i,y-i
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                    else:
-                        return False
-                        
-                else:
-                    return False
-            if(flag==1):
-                return True 
+            return True
+
+       if(x > X) and (y > Y):
+            for i in range(abs(x - X)-1):
+                x,y=x-1,y-1
+
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
+
+            return True
           
                    
    #cheak if its steeple move
-       elif((x==X)and(Y!=y)or((x!=X)and(Y==y))):
-           flag=0
-           if(x>X)and(y==Y):
-            for i in range(x,X,-1):
-                Pos=i-1,y
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=i,y
-
-                    if(True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                else:
-                    return False
-            if(flag==1):
-                return True 
+       elif((x == X) and (Y != y) or ((x != X) and (Y == y))):
+           if(x > X) and (y == Y):
+               
+            for i in range(x-1,X,-1):
+                x=x-1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                   return False
+            return True
+          
+                
             
-           if(x<X)and(y==Y):
-            for i in range(x,X):
-                Pos=i+1,y                
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=i,y
-                    if (True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                else:
-                    return False
-            if(flag==1):
-                return True 
-           if(y>Y)and(X==x):
-            for i in range(y,Y,-1):
-                
-                Pos=x,i-1
-                
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x,i
+           if(x < X) and (y == Y):
+             for i in range(x,X-1):
+                x=x+1
 
-                    if (True==Board.NoEnemy(Pos,team)):
-                        flag=1
-                else:
-                    return False
-            if(flag==1):
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                       return False
+
+             return True 
+           if(y > Y) and (X == x):
+               
+                for i in range(y-1,Y,-1):
+                    y=y-1
+                    if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                           return False
+    
                 return True 
                 
-           if(y<Y)and(X==x):
-            for i in range(y,Y):
-                Pos=x,i+1
-                if(True== Board.NoFriend(Pos,team)):
-                    Pos=x,i
+           if(y < Y) and (X == x):
+            for i in range(y,Y-1):
+                y=y+1
+                if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
+                       return False
 
-                    if(True==Board.NoEnemy(Pos,team)):
-
-                        flag=1
-                else:
-                    return False
-            if(flag==1):
-                return True 
+            return True 
         
         
            else:
               return False
      
        
-       
+    def set_of_valid_moves(self):
+        y,x = self.GetPos()
+        #לצורך בדיקה בלבלד!!!!
+        return [[x,y+1],[x,y+2]]
+      
        
        
 class Pawn(Players):  
-    name="Pawn"
+    name = "Pawn"
 #cheak if the move is Valid for this player
     
     
-    FirstMove=True
+    FirstMove = True
    
     def IsFirsMove(self,Board):
-        y,x=self.GetPos()
-        if(y==6)or(y==1):
+        y,x = self.GetPos()
+        if(y == 6) or (y == 1):
             return True
     
 
 
-    def IsValidMove(self,NewPos,Board):
-        y,x=self.GetPos()
-        Y,X=NewPos
+    def IsValidMove(self,NewPos,Board,Flag=1):
+        y,x = self.GetPos()
+        Y,X = NewPos
       
-        team=self.GetTeam()
-        
-        if((x==X)and(Y==y+1)and(team==False)
-           and(Board.NoEnemy(NewPos,team))
-           and((Board.KingTreat(team,self,NewPos)))
-           and(Board.NoFriend(NewPos,team))
-           or((x==X)and(Y==y-1)and(team==True)
-           and(Board.NoEnemy(NewPos,team))
-           and((Board.KingTreat(team,self,NewPos)))
-           and(Board.NoFriend(NewPos,team)))
-           or((x==X)and(Y==y+2)and(team==False)
-           and(Board.NoEnemy(NewPos,team))
-           and((Board.KingTreat(team,self,NewPos)))
-           and(self.IsFirsMove(Board))
-           and(Board.NoFriend(NewPos,team)))
-           or((x==X)and(Y==y-2)and(team==True)
-           and(Board.NoEnemy(NewPos,team))
-           and((Board.KingTreat(team,self,NewPos)))
-           and(self.IsFirsMove(Board))
-           and(Board.NoFriend(NewPos,team)))
-           or((x==X+1)and(y==Y+1)and(team==True)
-              and(False==Board.NoEnemy(NewPos,team))
-              and(Board.KingTreat(team,self,NewPos)))
-           or((x==X-1)and(y==Y+1)and(team==True)
-              and(False==Board.NoEnemy(NewPos,team))
-              and(Board.KingTreat(team,self,NewPos)))
-           or((x==X+1)and(y==Y-1)and(team==False)
-              and(False==Board.NoEnemy(NewPos,team))
-              and(Board.KingTreat(team,self,NewPos)))
-           or((x==X-1)and(y==Y-1)and(team==False)
-              and(False==Board.NoEnemy(NewPos,team))
-              and(Board.KingTreat(team,self,NewPos))
-              )):
-            return True#have to add en passant option!
+        team = self.GetTeam()
+        if(Flag==1):
+            if(((x == X) and (Y == y + 1) and (team == False) and (Board.NoEnemy(NewPos,team)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X) and (Y == y - 1) and (team == True) and (Board.NoEnemy(NewPos,team)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X) and (Y == y + 2) and (team == False) and (Board.NoEnemy(NewPos,team)) and (self.IsFirsMove(Board)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos)))
+               or ((x == X) and (Y == y - 2) and (team == True) and (Board.NoEnemy(NewPos,team)) and (self.IsFirsMove(Board)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X + 1) and (y == Y + 1) and (team == True) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X - 1) and (y == Y + 1) and (team == True) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X + 1) and (y == Y - 1) and (team == False) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) 
+               or ((x == X - 1) and (y == Y - 1) and (team == False) and (False == Board.NoEnemy(NewPos,team)) and (Board.KingTreat(team,self,NewPos)))):
+                return True
+            else:
+                return False
+        elif(Flag==0):
+            if(((x == X + 1) and (y == Y + 1) and (team == True)) 
+               or ((x == X - 1) and (y == Y + 1) and (team == True)) 
+               or ((x == X + 1) and (y == Y - 1) and (team == False)) 
+               or ((x == X - 1) and (y == Y - 1) and (team == False))):
+                return False
+            else:
+                return True
+    def set_of_valid_moves(self):
+        y,x = self.GetPos()
+
+        if self.FirstMove:
+            return [[x+2,y],[x+1,y+1],[x+1,y-1],[x+1,y]]
+        else:
+            return [[x+1,y+1],[x-1,y+1],[x,y+1]]
 
         
+#TODO add en passant option!
+
 class Knight(Players):  #horse..
 
 
-    name="Knight"
-
+    name = "Knight"
+    
  #cheak if the move is Valid for this player
-    def IsValidMove(self,NewPos,Board):
-        y,x=self.GetPos()
-        Y,X=NewPos
+    def IsValidMove(self,NewPos,Board,flag=1):
+        y,x = self.GetPos()
+        Y,X = NewPos
 
-        team=self.GetTeam()
-        if((x==X+1)and(y==Y+2)
-          or(x==X+1)and(y==Y-2)and(Board.KingTreat(team,self,NewPos))
-           and(Board.NoFriend(NewPos,team))
-          or(x==X-1)and(y==Y+2)and(Board.KingTreat(team,self,NewPos))
-           and(Board.NoFriend(NewPos,team))
-          or(x==X-1)and(y==Y-2)and(Board.KingTreat(team,self,NewPos))
-           and(Board.NoFriend(NewPos,team))
-          or(y==Y+1)and(x==X+2)and(Board.KingTreat(team,self,NewPos))
-           and(Board.NoFriend(NewPos,team))
-          or(y==Y+1)and(x==X-2)and(Board.KingTreat(team,self,NewPos))
-           and(Board.NoFriend(NewPos,team))
-          or(y==Y-1)and(x==X+2)and(Board.KingTreat(team,self,NewPos))
-           and(Board.NoFriend(NewPos,team))
-          or(y==Y-1)and(x==X-2)and(Board.KingTreat(team,self,NewPos))
-           and(Board.NoFriend(NewPos,team))):
-            return True
-
+        team = self.GetTeam()
+        if(flag==1):
+            
+            if(((x == X + 1) and (y == Y + 2) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X + 1) and (y == Y - 2) and (Board.KingTreat(team,self,NewPos)) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X - 1) and (y == Y + 2) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((x == X - 1) and (y == Y - 2) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y + 1) and (x == X + 2) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y + 1) and (x == X - 2) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y - 1) and (x == X + 2) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos))) or ((y == Y - 1) and (x == X - 2) and (Board.NoFriend(NewPos,team)) and (Board.KingTreat(team,self,NewPos)))):
+                return True
+            else:
+                return False
+        if(flag==0):
+            if(((x == X + 1) and (y == Y + 2)  and (Board.NoFriend(NewPos,team))) or ((x == X + 1) and (y == Y - 2) and (Board.NoFriend(NewPos,team))) or ((x == X - 1) and (y == Y + 2) and (Board.NoFriend(NewPos,team))) or ((x == X - 1) and (y == Y - 2) and (Board.NoFriend(NewPos,team))) or ((y == Y + 1) and (x == X + 2) and (Board.NoFriend(NewPos,team))) or ((y == Y + 1) and (x == X - 2) and (Board.NoFriend(NewPos,team))) or ((y == Y - 1) and (x == X + 2) and (Board.NoFriend(NewPos,team))) or ((y == Y - 1) and (x == X - 2) and (Board.NoFriend(NewPos,team)))):
+                return False
+            else:
+                return True
 
     
     
-    
+    def set_of_valid_moves(self):
+        y,x = self.GetPos()
+        return [[x+1,y+2],[x+1,y-2],[x-1,y+2],[x-1,y-2],[x+2,y+1],[x+2,y-1],[x-2,y+1],[x-2,y-1]]
+        
+
+        
     
     
 def main():
-    board=Board()
-    
-    #attantion!the left side is the Y ,and the right is X!
-    
-    
-    
-   
-   # print(board.Whites)
-    #[1],[2],[3],[6],[7]
-   # print(board.Blacks[0])
-
- #   roundx(456,32)
-    
-     #board.MovePlayer((6,4), (5,4))
-   # board.MovePlayer((7,3), (3,7))
-
-    board.MovePlayer((1,5), (2,5))
-    #board.MovePlayer((2,0), (6,4))
-  #  board.MovePlayer((0,1), (2,2))
-   # board.MovePlayer((0,0), (0,0))
-    #print(board.BoardGame[0,0])
-    
-   # board.MovePlayer((1,1), (2,1))
-    #board.MovePlayer((2,1), (3,1))
-    #board.MovePlayer((0,2), (1,1))
-   # board.MovePlayer((1,1), (0,2))
-    
-
-
-
-    
-  
-   
-
-
-
-
-
-
-
-
-
-
-
-    
-    #board.MovePlayer((0,0), (0,1))
-    #board.MovePlayer((0,1), (0,0))
-
-   # board.MovePlayer((0,3), (3,3))
-
-    board.MovePlayer((1,1), (2,1))
-   # board.MovePlayer((0,0), (4,0))
-   # board.MovePlayer((0,7), (0,5))
-
-
-
-
-    #board.MovePlayer((0,1), (0,0))
-
-    
-
-
-
-    #board.MovePlayer((2,1), (3,1))
-    #board.MovePlayer((3,1), (4,1))
-    #board.MovePlayer((4,1), (5,1))
-    #board.MovePlayer((5,1), (6,0))
-    #board.MovePlayer((6,0), (7,1))
-    #board.MovePlayer((6,6), (5,6))
-    #board.MovePlayer((5,6), (4,6))
-    #board.MovePlayer((4,6), (3,6))
-    #board.MovePlayer((3,6), (2,6))
-    #board.MovePlayer((6,6), (5,6))
-    #board.MovePlayer((1,7), (0,6))
-
-
-
-    
-    #board.MovePlayer((2,2), (4,3))
-    #board.MovePlayer((4,3), (6,4))
-    
-  
-
-  #  print("---------------------------")
-    
-    print(board.BoardGame)
+     board = Board()
+     
+     board.MovePlayer((6,5), (4,5))
+     board.MovePlayer((1,1), (2,1))
 
     
    
     
 if __name__ == "__main__":
-    main() 
+     main() 
     
-    #11/6 
-    #keep cheaking the movement element!!
-    #keep cheking the pawn movments and eating, and fix the functions 
-    
-    #(13/6)
-    #after cheaking all the players, have to build the more conditions for movments(if another
-    #player in the way) and after that to add the function:
-    #KingThreat
-    
-    #14/6 have to add conditions for queen, and the func KingThreat
+   
     
     
     
