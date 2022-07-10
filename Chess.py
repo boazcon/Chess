@@ -20,9 +20,11 @@ def roundx(x,y):
 class Board():
     Whites = []
     Blacks = [] 
+
     sum_black=-10390
     sum_white=10390
     Move=True
+
     BoardGame = np.empty((8,8), dtype=np.object)
     #oreder the board
     def __init__(self):
@@ -30,6 +32,7 @@ class Board():
 
         KingWhite = King(True,[7,4],10000)
         KingBlack = King(False,[0,4],-10000)
+
         self.BoardGame[7,4] = KingWhite
         self.Whites.append(KingWhite)
         self.BoardGame[0,4] = KingBlack
@@ -39,6 +42,7 @@ class Board():
 
         QueebWhite = Queen(True,[7,3],90)
         QueenBlack = Queen(False,[0,3],-90)
+
         self.BoardGame[7,3] = QueebWhite
         self.Whites.append(QueebWhite)
         self.BoardGame[0,3] = QueenBlack
@@ -50,6 +54,7 @@ class Board():
         team = True
         SteepleWhite1 = Steeple(team, [7,7],50)
         SteepleWhite2 = Steeple(team, [7,0],50)
+
         self.Whites.append(SteepleWhite1)
         self.Whites.append(SteepleWhite2)
         self.BoardGame[7,7] = SteepleWhite1
@@ -59,6 +64,7 @@ class Board():
         team = False
         SteepleBlack1 = Steeple(team, [0,7],-50)
         SteepleBlack2 = Steeple(team, [0,0],-50)
+
         self.Blacks.append(SteepleBlack1)
         self.Blacks.append(SteepleBlack2)
         self.BoardGame[0,7] = SteepleBlack1
@@ -71,6 +77,7 @@ class Board():
         team = True
         KnightWhite1 = Knight(team, [7,1],30)
         KnightWhite2 = Knight(team, [7,6],30)
+
         self.Whites.append(KnightWhite1)
         self.Whites.append(KnightWhite2)
         self.BoardGame[7,1] = KnightWhite1
@@ -80,6 +87,7 @@ class Board():
         team = False
         KnightBlack1 = Knight(team, [0,1],-30)
         KnightBlack2 = Knight(team, [0,6],-30)
+
         self.Blacks.append(KnightBlack1)
         self.Blacks.append(KnightBlack2)
         self.BoardGame[0,1] = KnightBlack1
@@ -90,6 +98,7 @@ class Board():
         team = True
         BishopsWhite1 = Bishop(team, [7,2],30)
         BishopWhite2 = Bishop(team, [7,5],30)
+
         self.Whites.append(BishopsWhite1)
         self.Whites.append(BishopWhite2)
         self.BoardGame[7,2] = BishopsWhite1
@@ -100,6 +109,7 @@ class Board():
         team = False
         BishopBlack1 = Bishop(team, [0,2],-30)
         BishopBlack2 = Bishop(team, [0,5],-30)
+
         self.Blacks.append(BishopBlack1)
         self.Blacks.append(BishopBlack2)
         self.BoardGame[0,2] = BishopBlack1
@@ -112,6 +122,7 @@ class Board():
         team = False
         for i in range(8):
             pawn = Pawn(team,[1,i],-10)
+
             self.BoardGame[1,i] = pawn
             self.Blacks.append(pawn)
             
@@ -119,6 +130,7 @@ class Board():
         team = True
         for i in range(8):
             pawn = Pawn(team,[6,i],10)
+
             self.BoardGame[6,i] = pawn
             self.Whites.append(pawn)
 
@@ -150,6 +162,7 @@ class Board():
         x,y=NewPos
         print("x and y:",x,y)
         if(self.BoardGame[x,y] == None):
+
             return True
         else:
             player = self.BoardGame[NewPos]
@@ -157,7 +170,7 @@ class Board():
             if(team == Team):
                 return True
         return False
-    
+
 
 #בדיקה אחרי מהלך של המלך, לבדוק אם *הוא* באיום
     def CheckForKing(self,team,NewPos):
@@ -216,9 +229,7 @@ class Board():
         PosNow=X,Y
         self.BoardGame[X,Y] = None
         self.BoardGame[t,z] = player
-        
 
-            
 
         if(team == True):
             KingW = self.Whites[0]
@@ -302,6 +313,7 @@ class Board():
             if(IsValid == True):
                 print("player,", player,"move from:" ,PosNow,"to:",PosTarget)
 
+
                 self.Change_turn()
                 self.BoardGame[PosTarget] = self.BoardGame[PosNow]
                 self.BoardGame[PosNow] = None
@@ -316,6 +328,7 @@ class Board():
                         del RemoveMe
                         print("total value game: ",self.sum_black+self.sum_white)
 
+
                         return True
                         
                     elif(team == False):
@@ -323,6 +336,7 @@ class Board():
                         self.sum_black=self.sum_black-RemoveMe.GetValue()
                         del RemoveMe
                         print("total value game: ", self.sum_black+self.sum_white)
+
 
                         return True
                 
@@ -342,6 +356,7 @@ class Players(ABC):
         self.team = team
         self.pos = pos
         self.value = value
+
         
     def __del__(self):
        pass
@@ -382,6 +397,7 @@ class King(Players):
         team = self.GetTeam()
         #print("newpos", NewPos)
        # print("firs,",Board.BoardGame)
+
         
         if(False==Board.CheckForKing(team,NewPos)):
             print("invalid move,cheak another option")
@@ -389,7 +405,7 @@ class King(Players):
         
         if(((x == X - 1) and (y == Y) and (Board.NoFriend(NewPos,team))) or ((x == X + 1) and (y == Y) and (Board.NoFriend(NewPos,team)) ) or ((y == Y - 1) and (x == X) and (Board.NoFriend(NewPos,team)) ) or ((y == Y + 1) and (x == X) and (Board.NoFriend(NewPos,team)) ) or ((y == Y + 1) and (x == X + 1) and (Board.NoFriend(NewPos,team)) ) or ((y == Y - 1) and (x == X - 1) and (Board.NoFriend(NewPos,team)) ) or ((y == Y + 1) and (x == X - 1) and (Board.NoFriend(NewPos,team)) ) or ((y == Y - 1) and (x == X + 1) and (Board.NoFriend(NewPos,team)) )):
             return True
-        #TODO have Hazracha..
+            
     def set_of_valid_moves(self):
         x,y = self.GetPos()
         return [[x-1,y],[x+1,y],[x,y-1],[x,y+1],[x-1,y-1],[x+1,y+1],[x-1,y+1],[x+1,y-1]]        
@@ -406,6 +422,7 @@ class Steeple(Players): #Tura..
         if(Flag==1):
             if(((x == X) and (y != Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board)) and (Board.KingTreat(team,self,NewPos)))
             or((x != X) and (y == Y) and (Board.NoFriend(NewPos,team)) and (self.NoPlayersInWay(NewPos,Board)) and (Board.KingTreat(team,self,NewPos)))):
+
                 return True
             else:
                 return False
@@ -543,7 +560,7 @@ class Bishop(Players): #runner..
                    return False
 
             return True
-        
+
         
     def set_of_valid_moves(self):
         y,x = self.GetPos()
@@ -594,6 +611,7 @@ class Queen(Players):
            
             for i in range(abs(x - X)-1):
                 x, y = x+1, y+1
+
                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                     return False
               
@@ -604,6 +622,7 @@ class Queen(Players):
        if(x > X) and (y < Y):
             
             for i in range(abs(x - X) -1):
+
                 x,y=x-1,y+1
                 if((False == Board.NoFriend((x,y),team))or(False == Board.NoEnemy((x,y),team))):
                     return False
@@ -731,6 +750,7 @@ class Pawn(Players):
         
 #TODO add en passant option!
 
+
 class Knight(Players):  #horse..
 
 
@@ -755,6 +775,7 @@ class Knight(Players):  #horse..
                 return True
 
     
+
     
     def set_of_valid_moves(self):
         y,x = self.GetPos()
@@ -770,13 +791,11 @@ def main():
      board.MovePlayer((6,5), (4,5))
      board.MovePlayer((1,1), (2,1))
 
+
     
    
     
 if __name__ == "__main__":
      main() 
-    
-   
-    
-    
+  
     
