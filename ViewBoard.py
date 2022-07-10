@@ -39,7 +39,7 @@ class ChessBoard:
                 pygame.draw.rect(win,WHITE,(row*SQUARE_SIZE,col*SQUARE_SIZE,SQUARE_SIZE,SQUARE_SIZE))
                 self.board=[row,col]
                 
-            
+        
                 
     
                 
